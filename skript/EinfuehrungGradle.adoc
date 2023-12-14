@@ -202,6 +202,9 @@ plugins {
 ----
 Dies konfiguriert das Plugin so, dass der Code für die JVM erstellt wird und Kotlin 1.9.20 verwendet wird. Sollten Sie eine andere Version installiert haben, so müssen Sie diese entsprechend angeben.
 
+*Aufgabe*
+Durch das Hinzufügen des Kotlin-Plugins sind neue Tasks hinzugekommen. Finden Sie heraus, welche es sind.
+
 Als nächstes müssen wir die Abhängigkeiten angeben. Darunter versteht man externe Bibliotheken, welche wir zusätzlich benötigen. Das kann JavaFX sein oder Bibliotheken zum Zugriff auf Datenbanken. Im Moment haben wir keine solchen Abhängigkeiten. Jedoch benötigt Gradle zum Kompilieren unseres Codes ein paar Systembibliotheken. Diese findet es in einem zentralen Repository im Internet. Dieses findet sich unter der URL https://mvnrepository.com/repos/central. Die Entwickler von Gradle haben vorgesorgt. Wir können Gradle einfach mitteilen, wo es suchen soll. Dazu ergänzen wir die Datei `+build.gradle.kts+` wie folgt:
 ----
 repositories {
