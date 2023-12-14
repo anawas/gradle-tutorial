@@ -20,7 +20,7 @@ Zudem lässt sich Gradle durch Plugins im Funktionsumfang erweitern. Eine breite
 Dieser Text dient als roter Faden im Unterricht. Er behandelt das Thema nicht vollständig. Ich habe mich darauf beschränkt, das Wesentliche herauszuarbeiten, so dass ein Grundverständnis für die Funktionweise von Gradle ensteht. Vertieftes Wissen kann man sich mit verschiedenen Büchern zum Thema aneignen. Auch die Webseite des Projektes enthält ein ausführliches Tutorial, allerdings nur auf Englisch. Der Link darauf lautet: https://docs.gradle.org/current/userguide/userguide.html
 
 Der Text mit dem Sourcecode kann von meinem GitHub-Account heruntergeladen werden:
-
+https://github.com/anawas/gradle-tutorial.git
 
 == Installation
 
