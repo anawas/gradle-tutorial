@@ -5,10 +5,10 @@ Andreas Wassmer <andreas.wassmer@doz.abbts.ch>
 :toc-title: Inhalt
 :icons: font
 
-Dieses Dokument wurde mit AsciiDoc erstellt. Damit lassen sich einfach und schnell Dokumentation erstellen. AsciiDoc basiert Markdown, einer Beschreibungssprache für Textdokumente. Formatierungen werden durch Markierungen erzeugt. Zum Beispiel führt `+*fett*+` zur Darstellung *fett*.
+Dieses Dokument wurde mit AsciiDoc erstellt.Damit lassen sich einfach und schnell Dokumentation erstellen.AsciiDoc basiert Markdown, einer Beschreibungssprache für Textdokumente.Formatierungen werden durch Markierungen erzeugt.Zum Beispiel führt `+*fett*+` zur Darstellung *fett*.
 
 == Was ist Gradle
-Gradle ist ein Build Management Tool, das für den Bau, die Konfiguration und das Management von Projekten verwendet wird. Es unterstützt eine Vielzahl von Programmiersprachen, darunter Java, Groovy, Kotlin, Scala und mehr, was es zu einer vielseitigen Lösung für unterschiedliche Projektanforderungen macht. Gradle gibt es für Windows, macOS und praktisch alle Linux-Distributionen.
+Gradle ist ein Build Management Tool, das für den Bau, die Konfiguration und das Management von Projekten verwendet wird.Es unterstützt eine Vielzahl von Programmiersprachen, darunter Java, Groovy, Kotlin, Scala und mehr, was es zu einer vielseitigen Lösung für unterschiedliche Projektanforderungen macht.Gradle gibt es für Windows, macOS und praktisch alle Linux-Distributionen.
 
 Gradle basiert auf einer DSL (Domain Specific Language) für die Projektdefinition, die es Entwicklern ermöglicht, den *Build-Prozess* in einer leicht verständlichen, strukturierten Syntax zu beschreiben. Zur Zeit sin diese beiden Sprachen Groovy und Kotlin.
 
@@ -347,3 +347,130 @@ META-INF/MANIFEST.MF
 META-INF/gradle-start.kotlin_module
 MainKt.class
 ----
+
+== Erstellen einer Applikation
+Mit dem bisher Erreichten können wir eine einfache Kotlin-Anwendung erstellen und unabhängig von der IDE ausführen. Wollen wir den Code testen, müssen wir zusätzliche Abhängigkeiten hinzufügen. Zudem müssen wir das korrekte Verzeichnis für den Sourcecode noch von Hand erzeugen. Abhilfe schafft das Plugin `+application+`. Dieses erweitert das Kotlin-Plugin vor allem um zwei neue Tasks.
+
+|===
+
+|`+assembleDist+` |Erzeugt die Jar-Datei und packt sie in ein Tar- und ein Zip File.
+
+|`+run+` | Erzeugt das Projekt und startet es
+|===
+
+Die Tar-Datei ist unter Linux eine beliebte Form, um mehrere Dateien zusammenzufassen. Die Zip-Datei kennen Sie. Diese funktioniert auf allen Systemen, wird aber vor allem für Windows und macOS eingesetzt. In den Dateien befindet sich alles Nötige, um den Code auszuführen. Das Hauptprogramm ist von den Bibliotheken getrennt. Dadurch lassen sich letztere einfacher Updaten. Für das Ausführen stehen Skripts zur Verfügung. Ein typisches Verzeichnis sieht wie folgt aus:
+----
+├── bin
+│   ├── app  <-- Damit lässt sich das Programm starten
+│   └── app.bat  <-- Dieses Skript ist für Windows
+└── lib
+    ├── annotations-13.0.jar
+    ├── app.jar  <-- Das ist unser Code
+    ├── checker-qual-3.33.0.jar
+    ├── error_prone_annotations-2.18.0.jar
+    ├── failureaccess-1.0.1.jar
+    ├── guava-32.1.1-jre.jar
+    ├── jsr305-3.0.2.jar
+    └── kotlin-stdlib-1.9.21.jar
+----
+
+Um die erwähnte Appliaktion zu erstellen genügt es, dem Build-Script das Plugin `+application+` hinzuzufügen. Noch einfacher geht es, wenn schon das Projekt als Applikation erzeugt wird. Dies erreicht man, wenn die Initialisierung erfolgt mit
+----
+./gradlew init --type kotlin-application
+----
+
+Beim Erzeugen wird man nach dem Namen des Source-Packages gefragt. Hier gibt man in der Regel den umgekehrten Domainnamen der Firma oder seiner Webseite ein. Also zum Beispiel `+com.example.ndsswe+`. Natürlich kann man auch andere Bezeichner wählen. Sie sollten darauf achten, keine Sonderzeichen, Zahlen und Bindestriche zu verwenden.
+
+Danach erzeugt Gradle ein erweitertes Projekverzeichnis:
+----
+.
+├── app
+│   ├── build.gradle.kts
+│   └── src
+│       ├── main
+│       │   ├── kotlin
+│       │   │   └── com
+│       │   │       └── example
+│       │   │           └── ndsswe
+│       │   │               └── App.kt
+│       │   └── resources
+│       └── test
+│           ├── kotlin
+│           │   └── com
+│           │       └── example
+│           │           └── ndsswe
+│           │               └── AppTest.kt
+│           └── resources
+├── gradle
+│   └── wrapper
+│       ├── gradle-wrapper.jar
+│       └── gradle-wrapper.properties
+├── gradlew
+├── gradlew.bat
+└── settings.gradle.kts
+----
+
+Neu gegenüber dem Basisprojekt ist, dass die Sourceodes nun in einem Ordner `+app+` untergebracht sind. Wir erkennen, dass aus dem angegebenen Sourcepackagename weitere Unterorder wurden. Zudem ist der neue Ordner `+test+` hinzugekommen. Dort werden die Testdateien gespeichert. Man erkennt, dass auch jeweils zwei Beispieldateien angelegt wurden: `+App.kt+` und `+AppTest.kt+`.
+
+Sowohl für die Tests als auch für das eigentliche Programm können weitere Ressourcen (Bilder usw.) in den Verzeichnissen `+resources+` gespeichert werden. Sie finden dann automatisch den Weg in die fertige Appliaktion.
+
+=== Die Datei build.gradle.kts
+Ein Blick in die Builddatei zeigt, dass das Erzeugen einer Applikation komplizierter geworden ist:
+----
+plugins {
+    // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
+    id("org.jetbrains.kotlin.jvm") version "1.9.10"
+
+    // Apply the application plugin to add support for building a CLI application in Java.
+    application
+}
+
+repositories {
+    // Use Maven Central for resolving dependencies.
+    mavenCentral()
+}
+
+dependencies {
+    // Use the Kotlin JUnit 5 integration.
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+
+    // Use the JUnit 5 integration.
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.3")
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    // This dependency is used by the application.
+    implementation("com.google.guava:guava:32.1.1-jre")
+}
+
+// Apply a specific Java toolchain to ease working on different environments.
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+application {
+    // Define the main class for the application.
+    mainClass.set("com.example.ndsswe.AppKt")
+}
+
+tasks.named<Test>("test") {
+    // Use JUnit Platform for unit tests.
+    useJUnitPlatform()
+}
+----
+
+Trotzdem bleibt es für uns einfach. Die Sourcefiles kommen in das Verzeichnis `+app/src/main/kotlin+`, die Dateien mit den Unittests in `+app/src/test/kotlin+`. Allfällige Bilder, Texte, Icons oder ähnliches werden in den beiden Ordnern `+resources+` abgelegt.
+
+Das Projekt erzeugt man wie gewohnt mit
+----
+./gradlew build
+----
+Dabei werden auch gleichzeitig die Unittests ausgeführt. Nur wenn diese erfolgreich sind, wird das Projekt erstellt. Will man nur die Tests ausführen, kann man dies mit `+./gradlew test+` erreichen.
+
+Haben Sie alles zusammen und wollen die Software Ihrem Dozenten zur Beurteilung einreichen, können Sie alles zusammen in eine Zip-Datei packen. Dies geschieht wie oben erwähnt mit
+----
+./gradlew distZip
+----
+
